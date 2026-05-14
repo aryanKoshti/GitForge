@@ -4,6 +4,7 @@ const { hideBin } = require("yargs/helpers");
 const { initRepo } = require("./controllers/init");
 const { addRepo } = require("./controllers/add")
 const { commitRepo } = require("./controllers/commit")
+const { pushRepo } = require("./controllers/push")
 
 yargs(hideBin(process.argv))
     .command("start", "Starts a new server", {}, startServer)
@@ -29,7 +30,7 @@ yargs(hideBin(process.argv))
             commitRepo(argv.message);
         })
 
-    // .command("push", "Push commits to S3", {}, pushRepo)
+    .command("push", "Push commits to S3", {}, pushRepo)
 
     // .command("pull", "pull commits from S3", {}, pullRepo)
 
