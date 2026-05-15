@@ -7,6 +7,7 @@ const { initRepo } = require("./controllers/init");
 const { addRepo } = require("./controllers/add")
 const { commitRepo } = require("./controllers/commit")
 const { pushRepo } = require("./controllers/push")
+const { pullRepo } = require("./controllers/pull")
 
 yargs(hideBin(process.argv))
     .command("start", "Starts a new server", {}, startServer)
@@ -34,7 +35,7 @@ yargs(hideBin(process.argv))
 
     .command("push", "Push commits to S3", {}, pushRepo)
 
-    // .command("pull", "pull commits from S3", {}, pullRepo)
+    .command("pull", "pull commits from S3", {}, pullRepo)
 
     // .command(
     //     "reveret <commitID>",
