@@ -1,4 +1,9 @@
+const express = require('express');
 require("dotenv").config();
+const cors = require('cors');
+const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+const http = require('http');
 
 const yargs = require('yargs');
 const { hideBin } = require("yargs/helpers");
@@ -55,5 +60,26 @@ yargs(hideBin(process.argv))
     .help().argv;
 
 function startServer() {
-    console.log("Server logic called")
+    const app = express();
+    const port = process.env.PORT || 8080;
+
+    app.use(bodyParser.json());
+    app.use(express.json());
+
+
+    // MongoDB connection
+    const mongoURI = process.env.MONGO_URI;
+
+    const connectDB = async () => {
+    try {
+        await mongoose.connect(mongoURI);
+        console.log("MongoDB connected!!");
+
+    } catch (err) {
+        console.error("Unable to connect DB:", err);
+    }
+};
+
+connectDB();
+
 }
