@@ -12,7 +12,7 @@ const initRepo = async () => {
             path.join(repoPath, "config.json"),
             JSON.stringify({ bucket: process.env.S3_BUCKET })
         )
-        console.log("Repositary initialized!!")
+        console.log("Repository initialized!!")
     } catch (err) {
         console.error("Error initialising repositary", err)
     }
