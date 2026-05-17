@@ -4,6 +4,7 @@ const cors = require('cors');
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const http = require('http');
+const { Server } = require("socket.io");
 
 const yargs = require('yargs');
 const { hideBin } = require("yargs/helpers");
@@ -59,27 +60,49 @@ yargs(hideBin(process.argv))
     .demandCommand(1, "You need at least one command")
     .help().argv;
 
-function startServer() {
-    const app = express();
-    const port = process.env.PORT || 8080;
 
-    app.use(bodyParser.json());
-    app.use(express.json());
-
-
-    // MongoDB connection
-    const mongoURI = process.env.MONGO_URI;
-
-    const connectDB = async () => {
+async function startServer() {
     try {
-        await mongoose.connect(mongoURI);
-        console.log("MongoDB connected!!");
+        await mongoose.connect(process.env.MONGO_URI);
+
+        console.log("MongoDB connected!");
+
+        const app = express();
+
+        app.use(cors());
+        app.use(express.json());
+
+        app.get("/", (req, res) => {
+            res.send("Welcome!");
+        });
+
+        const httpServer = http.createServer(app);
+
+        const io = new Server(httpServer, {
+            cors: {
+                origin: "*"
+            }
+        });
+
+        io.on("connection", (socket) => {
+
+            socket.on("joinRoom", (userID) => {
+
+                console.log(`${userID} joined`);
+
+                socket.join(userID);
+
+            });
+
+        });
+
+        const port = process.env.PORT || 8080;
+        httpServer.listen(port, () => {
+            console.log(`Server is running on PORT ${port}`)
+        });
 
     } catch (err) {
-        console.error("Unable to connect DB:", err);
+
+        console.error("Startup failed:", err);
     }
-};
-
-connectDB();
-
 }
