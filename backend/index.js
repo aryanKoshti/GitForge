@@ -72,10 +72,6 @@ async function startServer() {
         app.use(cors());
         app.use(express.json());
 
-        app.get("/", (req, res) => {
-            res.send("Welcome!");
-        });
-
         const httpServer = http.createServer(app);
 
         const io = new Server(httpServer, {
