@@ -6,6 +6,8 @@ const bodyParser = require("body-parser");
 const http = require('http');
 const { Server } = require("socket.io");
 
+const mainRouter = require("./routes/main.router");
+
 const yargs = require('yargs');
 const { hideBin } = require("yargs/helpers");
 
@@ -69,15 +71,17 @@ async function startServer() {
 
         const app = express();
 
-        app.use(cors());
+        app.use(cors({ origin: "*"}));
         app.use(express.json());
 
-        const httpServer = http.createServer(app);
+        app.use("/", mainRouter)
 
+        const httpServer = http.createServer(app);
         const io = new Server(httpServer, {
             cors: {
-                origin: "*"
-            }
+                origin: "*",
+                methods: ["GET", "POST"],
+            },
         });
 
         io.on("connection", (socket) => {
