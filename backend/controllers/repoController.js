@@ -37,7 +37,7 @@ module.exports = {
     getAllRepository,
     fetchRepositoryById,
     fetchRepositoryByName,
-    fetchRepositoryForCurrntUser,
+    fetchRepositoriesForCurrntUser,
     updateRepositoryById,
     toggleVisibliltyById,
     deleteRepositoryById
