@@ -8,6 +8,6 @@ userRouter.post("/signup", userController.signup);
 userRouter.post("/login", userController.login);
 userRouter.get("/userProfile", userController.getUserProfile);
 userRouter.put("/updateProfile", userController.updateUserProfile);
-userRouter.get("/deleteProfile", userController.deleteUserProfile);
+userRouter.delete("/deleteProfile", userController.deleteUserProfile);
 
 module.exports = userRouter;
