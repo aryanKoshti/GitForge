@@ -1,16 +1,78 @@
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const { MongoClient } = require("mongodb");
+const dotenv = require("dotenv");
+const e = require('cors');
+const User = require('../models/userModel');
 
+dotenv.config();
+
+
+const signup = async (req, res) => {
+    const { username, password, email } = req.body;
+    try {
+        if(!username || !password || !email) {
+            return res.status(400).json({
+                message: "All fields are required"
+            });    
+        }
+
+        const existingUser = await User.findOne({ email });
+        
+        if(existingUser) {
+            return res.status(409).json({
+                message: "User already exists"
+            });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const user = await User.create({
+            username,
+            email,
+            password: hashedPassword,
+            repositories: [],
+            followesUsers: [],
+            starRepo: [],
+        });
+
+        const token = jwt.sign(
+            { id: user._id }, 
+            process.env.JWT_SECRET_KEY,
+            { expiresIn : "1h"}
+        )
+
+        return res.status(201).json({
+            message: "Signup successful",
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email, 
+            },
+            token
+        })
+
+        module.exports = User;
+ 
+    } catch (err) {
+        console.log("Error in login : ", err.message),
+        res.status(500).send("Server error")
+    }
+}
+
+const login = (req, res) => {
+    const { email, passwoed } = req.body;
+
+    try {
+        
+    } catch (err) {
+        
+    }
+}
 
 const getAllUsers = (req, res) => {
     res.send("All users fetched!")
 };
-
-const signup = (req, res) => {
-    res.send("Sgining up!");
-}
-
-const login = (req, res) => {
-    res.send("Logging in!")
-}
 
 const getUserProfile = (req, res) => {
     res.send("Profile fetched!")
