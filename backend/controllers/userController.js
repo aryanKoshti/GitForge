@@ -149,12 +149,74 @@ const getUserProfile = async (req, res) => {
 }
 
 const updateUserProfile = async (req, res) => {
-    res.send("Profile updated!")
-}
+    const userID = req.params.id;
+    const { email, password } = req.body;
+    try {
+        const user = await User.findById(userID);
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+
+        if (email) {
+            const existingUser = await User.findOne({ email });
+            if (
+                existingUser &&
+                existingUser._id.toString() !== userID
+            ) {
+                return res.status(409).json({
+                    message: "Email already in use"
+                });
+            }
+            user.email = email;
+        }
+
+        if (password) {
+            const hashedPassword = await bcrypt.hash(
+                password,
+                10
+            );
+            user.password = hashedPassword;
+        }
+        await user.save();
+        return res.status(200).json({
+            message: "Profile updated successfully"
+        });
+    } catch (err) {
+        console.error(
+            "Error updating profile:",
+            err.message
+        );
+        return res.status(500).json({
+            message: "Server error"
+        });
+    }
+};
 
 const deleteUserProfile = async (req, res) => {
-    res.send("Profile deleted!")
-}
+    const userID = req.params.id;
+    try {
+        const user = await User.findById(userID);
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+        await User.findByIdAndDelete(userID);
+        return res.status(200).json({
+            message: "Profile deleted successfully"
+        });
+    } catch (err) {
+        console.error(
+            "Error deleting profile:",
+            err.message
+        );
+        return res.status(500).json({
+            message: "Server error"
+        });
+    }
+};
 
 module.exports = {
     getAllUsers,
