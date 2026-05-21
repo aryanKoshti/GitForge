@@ -1,9 +1,8 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { MongoClient } = require("mongodb");
 const dotenv = require("dotenv");
-const e = require('cors');
 const User = require('../models/userModel');
+let ObjectId = require("mongodb").ObjectId;
 
 dotenv.config();
 
@@ -64,23 +63,18 @@ const login = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-
         if (!email || !password) {
 
             return res.status(400).json({
                 message: "All fields are required!!"
             });
-
         }
 
         const existingUser = await User.findOne({ email });
-
         if (!existingUser) {
-
             return res.status(401).json({
                 message: "Invalid credentials!!"
             });
-
         }
 
         const isMatch = await bcrypt.compare(
@@ -89,7 +83,6 @@ const login = async (req, res) => {
         );
 
         if (!isMatch) {
-
             return res.status(401).json({
                 message: "Invalid credentials!!"
             });
@@ -108,29 +101,36 @@ const login = async (req, res) => {
         });
 
     } catch (err) {
-
         console.error("Error During login:", err.message);
 
         return res.status(500).json({
             message: "Server error!!"
         });
-
     }
 };
 
-const getAllUsers = (req, res) => {
-    res.send("All users fetched!")
+const getAllUsers = async (req, res) => {
+    try {
+        const users = await User.find();
+        return res.status(200).json(users);
+    } catch (err) {
+        console.error("Error fetching users:", err.message);
+
+        return res.status(500).json({
+            message: "Server error!!"
+        });
+    }
 };
 
-const getUserProfile = (req, res) => {
+const getUserProfile = async (req, res) => {
     res.send("Profile fetched!")
 }
 
-const updateUserProfile = (req, res) => {
+const updateUserProfile = async (req, res) => {
     res.send("Profile updated!")
 }
 
-const deleteUserProfile = (req, res) => {
+const deleteUserProfile = async (req, res) => {
     res.send("Profile deleted!")
 }
 
