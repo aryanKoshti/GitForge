@@ -123,7 +123,29 @@ const getAllUsers = async (req, res) => {
 };
 
 const getUserProfile = async (req, res) => {
-    res.send("Profile fetched!")
+    const currentID = req.params.id;
+
+    try {
+        const user = await User.findById(currentID);
+
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+
+        return res.status(200).json({ message: "profile fetched",  user });
+    } 
+    catch (err) {
+        console.error(
+            "Error fetching users:",
+            err.message
+        );
+
+        return res.status(500).json({
+            message: "Server error!!"
+        });
+    }
 }
 
 const updateUserProfile = async (req, res) => {
