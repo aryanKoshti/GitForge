@@ -195,7 +195,8 @@ const updateUserProfile = async (req, res) => {
 };
 
 const deleteUserProfile = async (req, res) => {
-    const userID = req.params.id;
+    console.log(JSON.stringify(req.params.id));
+    const userID = req.params.id.trim();
     try {
         const user = await User.findById(userID);
         if (!user) {
