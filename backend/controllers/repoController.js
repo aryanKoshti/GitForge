@@ -61,7 +61,7 @@ const createRepository = async (req, res) => {
 };
 
 const getAllRepository = async (req, res) => {
-    res.send("All repositories fetched!")
+   
 };
 
 const fetchRepositoryById = async (req, res) => {
