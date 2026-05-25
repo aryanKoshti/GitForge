@@ -201,9 +201,44 @@ const updateRepositoryById = async (req, res) => {
     }
 };
 
-const toggleVisibliltyById = async (req, res) => {
-    res.send("Repository toggled")
-}
+const toggleVisibilityById = async (req, res) => {
+    const id = req.params.id;
+    try {
+        if (
+            !mongoose.Types.ObjectId.isValid(id)
+        ) {
+            return res.status(400).json({
+                error: "Invalid Repository ID"
+            });
+        }
+        const repository =
+            await Repository.findById(id);
+        if (!repository) {
+            return res.status(404).json({
+                error: "Repository not found"
+            });
+        }
+        repository.visibility = !repository.visibility;
+
+        await repository.save();
+
+        return res.status(200).json({
+            message:
+                "Repository visibility toggled successfully",
+            visibility:
+                repository.visibility
+        });
+
+    } catch (err) {
+        console.error(
+            "Error toggling visibility:",
+            err.message
+        );
+        return res.status(500).json({
+            error: "Server error"
+        });
+    }
+};
 
 const deleteRepositoryById = async (req, res) => {
     res.send("Repository deleted!")
