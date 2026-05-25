@@ -33,7 +33,7 @@ const createRepository = async (req, res) => {
         }
         const newRepository =
             new Repository({
-                repoName:name,
+                repoName: name,
                 description,
                 visibility,
                 owner,
@@ -62,21 +62,48 @@ const createRepository = async (req, res) => {
 
 const getAllRepository = async (req, res) => {
     try {
-        
+
         const repositories = await Repository.find({})
-        .populate("owner")
-        .populate("issues");
+            .populate("owner")
+            .populate("issues");
 
         res.json(repositories);
 
     } catch (err) {
-          console.error("Error during fetching repositories!!");
-          res.status(500).send("Server error");
+        console.error("Error during fetching repositories!!", err.message);
+        res.status(500).send("Server error");
     }
 };
 
 const fetchRepositoryById = async (req, res) => {
-    res.send("Repository Details Fetched!")
+    const repoId = req.params.id;
+
+    try {
+
+        if (
+            !mongoose.Types.ObjectId.isValid(repoId)
+        ) {
+            return res.status(400).json({
+                error: "Invalid Repository ID"
+            });
+        }
+
+        const repository = await Repository.find({ _id: repoId })
+            .populate("owner")
+            .populate("issues");
+
+            if (!repository) {
+            return res.status(404).json({
+                error: "Repository not found"
+            });
+        }
+
+        return res.status(200).json(repository);
+        
+    } catch (err) {
+        console.error("Error during fetching repository!!", err.message);
+        res.status(500).send("Server error");
+    }
 };
 
 const fetchRepositoryByName = async (req, res) => {
