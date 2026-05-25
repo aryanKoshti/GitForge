@@ -92,7 +92,7 @@ const fetchRepositoryById = async (req, res) => {
             .populate("owner")
             .populate("issues");
 
-            if (!repository) {
+        if (!repository) {
             return res.status(404).json({
                 error: "Repository not found"
             });
@@ -138,12 +138,68 @@ const fetchRepositoryByName = async (req, res) => {
 };
 
 const fetchRepositoriesForCurrntUser = async (req, res) => {
-    res.send("Repositories for logged in user Fetched!")
+    const userId = req.user;
+
+    try {
+        const repositories = await Repository.find({ owner: userId });
+
+        if (!repositories || repositories.length == 0) {
+            return res.status(404).json({ error: "Repository not found" })
+        }
+
+        res.json({ message: "Repositories fetched!", repositories })
+
+    } catch (err) {
+        console.error(
+            "Error during fetching repository:",
+            err.message
+        );
+        return res.status(500).json({
+            error: "Server error"
+        });
+    }
 };
 
 const updateRepositoryById = async (req, res) => {
-    res.send("Repository updated!")
-}
+
+    const id = req.params.id;
+    const { content, description } = req.body;
+
+    try {
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                error: "Invalid Repository ID"
+            });
+        }
+        const repository =
+            await Repository.findById(id);
+
+        if (!repository) {
+            return res.status(404).json({
+                error: "Repository not found"
+            });
+        }
+        if (content !== undefined) {
+            repository.content = content;
+        }
+        if (description !== undefined) {
+            repository.description = description;
+        }
+        await repository.save();
+        return res.status(200).json({
+            message: "Repository updated successfully",
+            repository
+        });
+    } catch (err) {
+        console.error(
+            "Error updating repository:",
+            err.message
+        );
+        return res.status(500).json({
+            error: "Server error"
+        });
+    }
+};
 
 const toggleVisibliltyById = async (req, res) => {
     res.send("Repository toggled")
