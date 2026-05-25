@@ -99,7 +99,7 @@ const fetchRepositoryById = async (req, res) => {
         }
 
         return res.status(200).json(repository);
-        
+
     } catch (err) {
         console.error("Error during fetching repository!!", err.message);
         res.status(500).send("Server error");
@@ -107,7 +107,34 @@ const fetchRepositoryById = async (req, res) => {
 };
 
 const fetchRepositoryByName = async (req, res) => {
-    res.send("Repository Details Fetched!")
+    const repoName = req.params.name;
+
+    try {
+        const repository =
+            await Repository.findOne({
+                repoName: repoName
+            })
+                .populate("owner")
+                .populate("issues");
+
+        if (!repository) {
+            return res.status(404).json({
+                error: "Repository not found"
+            });
+        }
+
+        return res.status(200).json(repository);
+
+    } catch (err) {
+        console.error(
+            "Error during fetching repository:",
+            err.message
+        );
+
+        return res.status(500).json({
+            error: "Server error"
+        });
+    }
 };
 
 const fetchRepositoriesForCurrntUser = async (req, res) => {
