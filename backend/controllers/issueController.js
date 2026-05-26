@@ -45,10 +45,10 @@ const updateIssueById = async (req, res) => {
 
         await issue.save();
 
-        res.json(issue);
+        res.json(issue, {message : "Issue updated"});
     } catch (err) {
         console.error(
-            "Error during issue updation:",
+            "Error during issue updation : ",
             err.message
         );
 
@@ -63,13 +63,14 @@ const deleteIssueById = async (req, res) => {
 
     try {
         const issue = Issue.findByIdAndDelete(id);
+
         if (!issue) {
             return res.status(404).json({ error: "Issue not found!!" })
         }
-
+        res.json({ message: "Issue deleted"})
     } catch (err) {
         console.error(
-            "Error during issue updation:",
+            "Error during issue deletion : ",
             err.message
         );
 
@@ -80,7 +81,25 @@ const deleteIssueById = async (req, res) => {
 }
 
 const getAllIssues = async (req, res) => {
-    res.send("All Issue fetched!")
+    const { id } = req.params;    // repo id 
+
+    try {
+        const issues = Issue.find({ repository : id })
+
+        if (!issue) {
+            return res.status(404).json({ error: "Issue not found!!" })
+        }
+        res.status(200).json(issues)
+    } catch (err) {
+        console.error(
+            "Error during issue fetching : ",
+            err.message
+        );
+
+        return res.status(500).json({
+            error: "Server error"
+        });
+    }
 }
 
 const getIssueById = async (req, res) => {
