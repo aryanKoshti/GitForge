@@ -63,6 +63,9 @@ const deleteIssueById = async (req, res) => {
 
     try {
         const issue = Issue.findByIdAndDelete(id);
+        if (!issue) {
+            return res.status(404).json({ error: "Issue not found!!" })
+        }
 
     } catch (err) {
         console.error(
