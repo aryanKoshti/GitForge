@@ -71,7 +71,7 @@ async function startServer() {
 
         const app = express();
 
-        app.use(cors({ origin: "*"}));
+        app.use(cors({ origin: "*" }));
         app.use(express.json());
 
         app.use("/", mainRouter)
