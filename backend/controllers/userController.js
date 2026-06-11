@@ -30,7 +30,7 @@ const signup = async (req, res) => {
             email,
             password: hashedPassword,
             repositories: [],
-            followesUsers: [],
+            followersUsers: [],
             starRepo: [],
         });
 
@@ -50,10 +50,8 @@ const signup = async (req, res) => {
             token
         })
 
-        module.exports = User;
-
     } catch (err) {
-        console.log("Error in login : ", err.message),
+        console.log("Error in Signup : ", err.message),
             res.status(500).send("Server error")
     }
 }
@@ -97,7 +95,11 @@ const login = async (req, res) => {
 
         return res.status(200).json({
             token,
-            userId: existingUser._id
+            user: {
+                id: existingUser._id,
+                username: existingUser.username,
+                email: existingUser.email
+            }
         });
 
     } catch (err) {
@@ -111,8 +113,7 @@ const login = async (req, res) => {
 
 const getAllUsers = async (req, res) => {
     try {
-        const users = await User.find();
-        return res.status(200).json(users);
+        const users = await User.find().select("-password"); return res.status(200).json(users);
     } catch (err) {
         console.error("Error fetching users:", err.message);
 
@@ -126,7 +127,15 @@ const getUserProfile = async (req, res) => {
     const currentID = req.params.id;
 
     try {
-        const user = await User.findById(currentID);
+
+        if (!ObjectId.isValid(currentID)) {
+            return res.status(400).json({
+                message: "Invalid user ID"
+            });
+        }
+
+        const user = await User.findById(currentID)
+    .select("-password");
 
         if (!user) {
             return res.status(404).json({
@@ -134,8 +143,8 @@ const getUserProfile = async (req, res) => {
             });
         }
 
-        return res.status(200).json({ message: "profile fetched",  user });
-    } 
+        return res.status(200).json({ message: "profile fetched", user });
+    }
     catch (err) {
         console.error(
             "Error fetching users:",
@@ -152,6 +161,13 @@ const updateUserProfile = async (req, res) => {
     const userID = req.params.id;
     const { email, password } = req.body;
     try {
+
+        if (!ObjectId.isValid(userID)) {
+            return res.status(400).json({
+                message: "Invalid user ID"
+            });
+        }
+
         const user = await User.findById(userID);
         if (!user) {
             return res.status(404).json({
@@ -198,6 +214,13 @@ const deleteUserProfile = async (req, res) => {
     console.log(JSON.stringify(req.params.id));
     const userID = req.params.id.trim();
     try {
+
+        if (!ObjectId.isValid(userID)) {
+            return res.status(400).json({
+                message: "Invalid user ID"
+            });
+        }
+
         const user = await User.findById(userID);
         if (!user) {
             return res.status(404).json({
