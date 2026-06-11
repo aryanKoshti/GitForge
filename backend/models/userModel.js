@@ -6,11 +6,15 @@ const UserSchema = new Schema({
         type: String,
         required: true,
         unique: true,
+        trim: true,
+        minlength: 3
     },
     email: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        lowercase: true,
+        trim: true
     },
     password: {
         type: String,
@@ -24,7 +28,7 @@ const UserSchema = new Schema({
         },
     ],
 
-    followesUsers: [
+    followersUsers: [
         {
             default: [],
             type: Schema.Types.ObjectId,
@@ -38,7 +42,12 @@ const UserSchema = new Schema({
             ref: "Repository",
         },
     ],
-});
+
+},
+    {
+        timestamps: true
+    }
+);
 
 const User = mongoose.model("User", UserSchema);
 module.exports = User;
