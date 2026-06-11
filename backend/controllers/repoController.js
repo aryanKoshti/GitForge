@@ -137,23 +137,28 @@ const fetchRepositoryByName = async (req, res) => {
     }
 };
 
-const fetchRepositoriesForCurrntUser = async (req, res) => {
-    const userId = req.user;
+const fetchRepositoriesForCurrentUser = async (req, res) => {
+    const userId = req.params.userID;
 
     try {
-        const repositories = await Repository.find({ owner: userId });
 
-        if (!repositories || repositories.length == 0) {
-            return res.status(404).json({ error: "Repository not found" })
-        }
+        const repositories =
+            await Repository.find({
+                owner: userId
+            });
 
-        res.json({ message: "Repositories fetched!", repositories })
+        return res.status(200).json({
+            message: "Repositories fetched!",
+            repositories
+        });
 
     } catch (err) {
+
         console.error(
             "Error during fetching repository:",
             err.message
         );
+
         return res.status(500).json({
             error: "Server error"
         });
@@ -201,7 +206,7 @@ const updateRepositoryById = async (req, res) => {
     }
 };
 
-const toggleVisibilityById = async (req, res) => {
+const toggleVisibililtyById = async (req, res) => {
     const id = req.params.id;
     try {
         if (
@@ -278,8 +283,8 @@ module.exports = {
     getAllRepository,
     fetchRepositoryById,
     fetchRepositoryByName,
-    fetchRepositoriesForCurrntUser,
+    fetchRepositoriesForCurrentUser,
     updateRepositoryById,
-    toggleVisibliltyById,
+    toggleVisibililtyById,
     deleteRepositoryById
 }
