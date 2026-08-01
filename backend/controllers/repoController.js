@@ -8,6 +8,8 @@ const createRepository = async (req, res) => {
     const {
         owner,
         name,
+        issues,
+        content,
         description,
         visibility
     } = req.body;

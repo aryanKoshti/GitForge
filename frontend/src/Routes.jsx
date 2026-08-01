@@ -54,7 +54,16 @@ const ProjectRoutes = () => {
             path: "/signup",
             element: <Signup />,
         },
+        {
+            path: "/create",
+            element: <Signup />,
+        },
     ]);
 };
+
+// const ProjectRoutes = () => {
+//     return <h1>Hello World</h1>;
+// };
+
 
 export default ProjectRoutes;
